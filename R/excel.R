@@ -1,6 +1,6 @@
 #' Set-up Excel workbook with standard options
 #'
-#' Creates a `openxlsx::createWorkbook()` object, adds a worksheet, sets column
+#' Creates a [openxlsx::createWorkbook()] object, adds a worksheet, sets column
 #' widths to auto and configures options for borders, dates and maximum column
 #' widths.
 #'
@@ -10,7 +10,7 @@
 #' @param sheet_name string, the sheet name to create for `dat`
 #' @param dat data frame of the data for the sheet
 #'
-#' @returns a `openxlsx::createWorkbook()` workbook object
+#' @returns a [openxlsx::createWorkbook()] workbook object
 #' @export
 #'
 setup_workbook <- function (sheet_name, dat) {
@@ -28,12 +28,12 @@ setup_workbook <- function (sheet_name, dat) {
 #'
 #' Writes the meta data to the top rows of an Excel workbook and formats them
 #'
-#' @param wb an `openxlsx::createWorkbook()` object
+#' @param wb an [openxlsx::createWorkbook()] object
 #' @param sheet_name a string, the sheet name in `wb` to write to
 #' @param h_data a list where each element corresponds to one row in the header
 #' @param dat a data frame of the data that will be written below the header
 #'
-#' @returns a modified `openxlsx::createWorkbook()` object
+#' @returns a modified [openxlsx::createWorkbook()] object
 #' @export
 #'
 add_worksheet_header <- function (wb, sheet_name, h_data, dat) {
@@ -61,7 +61,7 @@ add_worksheet_header <- function (wb, sheet_name, h_data, dat) {
 #' Writes a data frame to the specified sheet in an Excel workbook and applies
 #' formatting, conditional formatting, freeze panes, and filters.
 #'
-#' @param wb an `openxlsx::createWorkbook()` object
+#' @param wb an [openxlsx::createWorkbook()] object
 #' @param sheet_name string, the sheet name to write to
 #' @param dat data frame, the data to write
 #' @param start_row integer, the row number at which the write the column header
@@ -73,7 +73,7 @@ add_worksheet_header <- function (wb, sheet_name, h_data, dat) {
 #' @param finding_col a string, the column name for reconciliation findings,
 #' default is `"Finding"`
 #'
-#' @returns a modified `openxlsx::createWorkbook()` object
+#' @returns a modified [openxlsx::createWorkbook()] object
 #' @export
 #'
 add_worksheet_data <- function (wb,

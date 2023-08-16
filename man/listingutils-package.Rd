@@ -19,5 +19,16 @@ Useful links:
 \author{
 \strong{Maintainer}: Stephen Knapp \email{stephen@knappconsultingllc.com} (\href{https://orcid.org/0000-0002-5101-4555}{ORCID})
 
+Authors:
+\itemize{
+  \item Jason Zhang \email{jason.zhang@edetek.com}
+}
+
+Other contributors:
+\itemize{
+  \item Inga Lin \email{inga.lin@oncology.sumitomo-pharma.com} [contributor]
+  \item Sylvia Chen \email{sylvia.chen@oncology.sumitomo-pharma.com} [contributor]
+}
+
 }
 \keyword{internal}

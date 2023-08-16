@@ -15,7 +15,7 @@ add_worksheet_data(
 )
 }
 \arguments{
-\item{wb}{an `openxlsx::createWorkbook()` object}
+\item{wb}{an [openxlsx::createWorkbook()] object}
 
 \item{sheet_name}{string, the sheet name to write to}
 
@@ -34,7 +34,7 @@ tracking between report versions, default is `"Discrepancy Change"`}
 default is `"Finding"`}
 }
 \value{
-a modified `openxlsx::createWorkbook()` object
+a modified [openxlsx::createWorkbook()] object
 }
 \description{
 Writes a data frame to the specified sheet in an Excel workbook and applies

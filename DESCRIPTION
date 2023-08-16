@@ -2,9 +2,17 @@ Package: listingutils
 Type: Package
 Title: Utilities for Data Listings
 Version: 0.0.0.9000
-Authors@R: 
-    person("Stephen", "Knapp", , "stephen@knappconsultingllc.com", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-5101-4555"))
+Authors@R: c(
+    person("Stephen", "Knapp", , "stephen@knappconsultingllc.com", 
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5101-4555")),
+    person("Jason", "Zhang", , "jason.zhang@edetek.com",
+           role = c("aut")),
+    person("Inga", "Lin", , "inga.lin@oncology.sumitomo-pharma.com",
+           role = c("ctb")),
+    person("Sylvia", "Chen", , "sylvia.chen@oncology.sumitomo-pharma.com",
+           role = c("ctb"))
+    )
 Description: Provides utility functions for statistical programmers to create 
     data listings in MS Excel.
 License: MIT + file LICENSE
@@ -13,10 +21,18 @@ LazyData: true
 URL: https://github.com/skgithub14/listingutils
 BugReports: https://github.com/skgithub14/listingutils/issues
 Imports: 
+    dplyr,
+    haven,
     magrittr,
     openxlsx,
     purrr,
-    stringr
+    readxl,
+    rlang,
+    stats,
+    stringr,
+    tibble,
+    tidyselect,
+    utils
 RoxygenNote: 7.2.3
 Suggests: 
     testthat (>= 3.0.0)

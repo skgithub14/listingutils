@@ -12,10 +12,10 @@ setup_workbook(sheet_name, dat)
 \item{dat}{data frame of the data for the sheet}
 }
 \value{
-a `openxlsx::createWorkbook()` workbook object
+a [openxlsx::createWorkbook()] workbook object
 }
 \description{
-Creates a `openxlsx::createWorkbook()` object, adds a worksheet, sets column
+Creates a [openxlsx::createWorkbook()] object, adds a worksheet, sets column
 widths to auto and configures options for borders, dates and maximum column
 widths.
 }
