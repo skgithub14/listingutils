@@ -1,13 +1,22 @@
 Package: listingutils
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Title: Utilities for Data Listings
+Version: 0.0.0.9000
+Authors@R: 
+    person("Stephen", "Knapp", , "stephen@knappconsultingllc.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5101-4555"))
+Description: Provides utility functions for statistical programmers to create 
+    data listings in MS Excel.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/skgithub14/listingutils
 BugReports: https://github.com/skgithub14/listingutils/issues
+Imports: 
+    magrittr,
+    openxlsx,
+    purrr
+RoxygenNote: 7.2.3
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

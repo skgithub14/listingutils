@@ -12,9 +12,12 @@
 #'
 #' @returns a `openxlsx::createWorkbook()` workbook object
 setup_workbook <- function (sheet_name, dat) {
-  wb <- createWorkbook()
-  addWorksheet(wb, sheetName = sheet_name)
-  setColWidths(wb, sheet = sheet_name, cols = 1:ncol(dat), widths = 15)
+  wb <- openxlsx::createWorkbook()
+  openxlsx::addWorksheet(wb, sheetName = sheet_name)
+  openxlsx::setColWidths(wb,
+                         sheet = sheet_name,
+                         cols = 1:ncol(dat),
+                         widths = 15)
   return(wb)
 }
 
@@ -31,16 +34,17 @@ setup_workbook <- function (sheet_name, dat) {
 #' @returns a modified `openxlsx::createWorkbook()` object
 add_worksheet_header <- function (wb, sheet_name, h_data, dat) {
   for (hd in seq_along(h_data)) {
-    writeData(wb, sheet = sheet_name, x = h_data[[hd]], startRow = hd)
-    mergeCells(wb, sheet = sheet_name, rows = hd, cols = 1:ncol(dat))
+    openxlsx::writeData(wb, sheet = sheet_name, x = h_data[[hd]], startRow = hd)
+    openxlsx::mergeCells(wb, sheet = sheet_name, rows = hd, cols = 1:ncol(dat))
     if (hd == 1) {
-      study_style <- createStyle(fontSize = 15, textDecoration = "bold")
-      addStyle(wb,
-               sheet = sheet_name,
-               study_style,
-               rows = 1,
-               cols = 1:ncol(dat),
-               gridExpand = TRUE)
+      study_style <- openxlsx::createStyle(fontSize = 15,
+                                           textDecoration = "bold")
+      openxlsx::addStyle(wb,
+                         sheet = sheet_name,
+                         study_style,
+                         rows = 1,
+                         cols = 1:ncol(dat),
+                         gridExpand = TRUE)
     }
   }
 
@@ -75,85 +79,87 @@ add_worksheet_data <- function (wb,
                                 finding_col = "Finding") {
 
   # set table header style
-  headerStyle <- createStyle(border = "TopBottomLeftRight",
-                             wrapText = TRUE,
-                             halign = "center",
-                             valign = "center",
-                             textDecoration = "bold",
-                             fgFill = "#b3d9e5")
+  headerStyle <- openxlsx::createStyle(border = "TopBottomLeftRight",
+                                       wrapText = TRUE,
+                                       halign = "center",
+                                       valign = "center",
+                                       textDecoration = "bold",
+                                       fgFill = "#b3d9e5")
 
   # add the data
-  writeData(wb,
-            sheet = sheet_name,
-            x = dat,
-            colNames = TRUE,
-            startRow = start_row,
-            borders = "all",
-            headerStyle = headerStyle,
-            withFilter = T)
+  openxlsx::writeData(wb,
+                      sheet = sheet_name,
+                      x = dat,
+                      colNames = TRUE,
+                      startRow = start_row,
+                      borders = "all",
+                      headerStyle = headerStyle,
+                      withFilter = T)
 
   ## table body formatting
   body_start <- start_row + 1
   body_end <- start_row + nrow(dat)
   body_rows <- seq(body_start, body_end)
 
-  freezePane(wb, sheet = sheet_name, firstActiveRow = body_start)
+  openxlsx::freezePane(wb, sheet = sheet_name, firstActiveRow = body_start)
 
   # add styles depending on if a column has a Date class or not
-  col_classes <- modify(colnames(dat), ~ class(dat[[.]]))
-  contentStyleGeneral <- createStyle(border = "TopBottomLeftRight",
-                                     wrapText = TRUE,
-                                     halign = "center",
-                                     valign = "center")
-  contentStyleDates <- createStyle(border = "TopBottomLeftRight",
-                                   wrapText = TRUE,
-                                   halign = "center",
-                                   valign = "center",
-                                   numFmt = "ddmmmyyyy")
-  addStyle(wb,
-           sheet = sheet_name,
-           style = contentStyleGeneral,
-           rows = body_rows,
-           cols = which(col_classes != "Date"),
-           gridExpand = TRUE)
-  addStyle(wb,
-           sheet = sheet_name,
-           style = contentStyleDates,
-           rows = body_rows,
-           cols = which(col_classes == "Date"),
-           gridExpand = TRUE)
+  col_classes <- purrr::modify(colnames(dat), ~ class(dat[[.]]))
+  contentStyleGeneral <- openxlsx::createStyle(border = "TopBottomLeftRight",
+                                               wrapText = TRUE,
+                                               halign = "center",
+                                               valign = "center")
+  contentStyleDates <- openxlsx::createStyle(border = "TopBottomLeftRight",
+                                             wrapText = TRUE,
+                                             halign = "center",
+                                             valign = "center",
+                                             numFmt = "ddmmmyyyy")
+  openxlsx::addStyle(wb,
+                     sheet = sheet_name,
+                     style = contentStyleGeneral,
+                     rows = body_rows,
+                     cols = which(col_classes != "Date"),
+                     gridExpand = TRUE)
+  openxlsx::addStyle(wb,
+                     sheet = sheet_name,
+                     style = contentStyleDates,
+                     rows = body_rows,
+                     cols = which(col_classes == "Date"),
+                     gridExpand = TRUE)
 
   ## conditional formatting
   # mark non-Data Matches in the Discrepancy column
-  FindingNotMatchStyle <- createStyle(fontColour = "#FF0000",
-                                      bgFill = "#FFFF00")
-  conditionalFormatting(wb,
-                        sheet = sheet_name,
-                        rows = body_rows,
-                        cols = which(colnames(dat) == finding_col),
-                        rule = paste0("!=\"", match_text,"\""),
-                        type = "expression",
-                        style = FindingNotMatchStyle)
+  FindingNotMatchStyle <- openxlsx::createStyle(fontColour = "#FF0000",
+                                                bgFill = "#FFFF00")
+  openxlsx::conditionalFormatting(wb,
+                                  sheet = sheet_name,
+                                  rows = body_rows,
+                                  cols = which(colnames(dat) == finding_col),
+                                  rule = paste0("!=\"", match_text,"\""),
+                                  type = "expression",
+                                  style = FindingNotMatchStyle)
 
   # mark "Changes" in the Change column
-  ChangeChangeStyle <- createStyle(fontColour = "#FF0000", bgFill = "#FFFF00")
-  conditionalFormatting(wb,
-                        sheet = sheet_name,
-                        rows = body_rows,
-                        cols = which(colnames(dat) == disrepancy_col),
-                        rule = "Change",
-                        type = "contains",
-                        style = ChangeChangeStyle)
+  ChangeChangeStyle <- openxlsx::createStyle(fontColour = "#FF0000",
+                                             bgFill = "#FFFF00")
+  openxlsx::conditionalFormatting(wb,
+                                  sheet = sheet_name,
+                                  rows = body_rows,
+                                  cols = which(colnames(dat) == disrepancy_col),
+                                  rule = "Change",
+                                  type = "contains",
+                                  style = ChangeChangeStyle)
 
   # mark "New" entries in the Change column
-  ChangeNewStyle <- createStyle(fontColour = "#00FF00", bgFill = "#FFFF00")
-  conditionalFormatting(wb,
-                        sheet = sheet_name,
-                        rows = body_rows,
-                        cols = which(colnames(dat) == disrepancy_col),
-                        rule = "New",
-                        type = "contains",
-                        style = ChangeNewStyle)
+  ChangeNewStyle <- openxlsx::createStyle(fontColour = "#00FF00",
+                                          bgFill = "#FFFF00")
+  openxlsx::conditionalFormatting(wb,
+                                  sheet = sheet_name,
+                                  rows = body_rows,
+                                  cols = which(colnames(dat) == disrepancy_col),
+                                  rule = "New",
+                                  type = "contains",
+                                  style = ChangeNewStyle)
 
   return(wb)
 }
