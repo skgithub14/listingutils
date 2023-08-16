@@ -27,7 +27,6 @@ Imports:
     purrr,
     rlang,
     stats,
-    stringr,
     tibble,
     tidyselect,
     utils

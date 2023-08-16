@@ -11,7 +11,7 @@ format_date_DDMMMYYYY <- function(my_date) {
   my_date %>%
     as.Date(format = "%Y%m%d") %>%
     format(format = "%d%b%Y") %>%
-    stringr::str_to_upper()
+    toupper()
 }
 
 
