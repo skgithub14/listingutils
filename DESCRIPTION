@@ -22,9 +22,11 @@ URL: https://github.com/skgithub14/listingutils
 BugReports: https://github.com/skgithub14/listingutils/issues
 Imports: 
     dplyr,
+    haven,
     magrittr,
     openxlsx,
     purrr,
+    readxl,
     rlang,
     stats,
     tibble,
