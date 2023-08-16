@@ -11,6 +11,8 @@
 #' @param dat data frame of the data for the sheet
 #'
 #' @returns a `openxlsx::createWorkbook()` workbook object
+#' @export
+#'
 setup_workbook <- function (sheet_name, dat) {
   wb <- openxlsx::createWorkbook()
   openxlsx::addWorksheet(wb, sheetName = sheet_name)
@@ -32,6 +34,8 @@ setup_workbook <- function (sheet_name, dat) {
 #' @param dat a data frame of the data that will be written below the header
 #'
 #' @returns a modified `openxlsx::createWorkbook()` object
+#' @export
+#'
 add_worksheet_header <- function (wb, sheet_name, h_data, dat) {
   for (hd in seq_along(h_data)) {
     openxlsx::writeData(wb, sheet = sheet_name, x = h_data[[hd]], startRow = hd)
@@ -70,6 +74,8 @@ add_worksheet_header <- function (wb, sheet_name, h_data, dat) {
 #' default is `"Finding"`
 #'
 #' @returns a modified `openxlsx::createWorkbook()` object
+#' @export
+#'
 add_worksheet_data <- function (wb,
                                 sheet_name,
                                 dat,

@@ -15,7 +15,8 @@ BugReports: https://github.com/skgithub14/listingutils/issues
 Imports: 
     magrittr,
     openxlsx,
-    purrr
+    purrr,
+    stringr
 RoxygenNote: 7.2.3
 Suggests: 
     testthat (>= 3.0.0)
