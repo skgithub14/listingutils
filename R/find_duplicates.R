@@ -16,9 +16,8 @@
 #'
 find_duplicates <- function(df, keys, message, col = Discrepancy) {
   df <- df %>%
-    dplyr::group_by(dplyr::across({{keys}})) %>%
-    dplyr::mutate({{col}} := dplyr::row_number()) %>%
-    dplyr::mutate({{col}} := dplyr::if_else({{col}} > 1,
+    dplyr::group_by(dplyr::across(tidyselect::all_of(keys))) %>%
+    dplyr::mutate("{col}" := dplyr::if_else(n() > 1,
                                             message,
                                             NA_character_)
     ) %>%
