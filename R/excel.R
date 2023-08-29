@@ -110,7 +110,13 @@ add_worksheet_data <- function (wb,
   openxlsx::freezePane(wb, sheet = sheet_name, firstActiveRow = body_start)
 
   # add styles depending on if a column has a Date class or not
-  col_classes <- purrr::modify(colnames(dat), ~ class(dat[[.]]))
+  col_classes <- purrr::modify(colnames(dat), ~ {
+    cl <- class(dat[[.]])[1]
+    if (cl %in% c("POSIXlt", "POSIXt", "POSIXct")){
+      cl <- "POSIX"
+    }
+    return(cl)
+  })
   contentStyleGeneral <- openxlsx::createStyle(border = "TopBottomLeftRight",
                                                wrapText = TRUE,
                                                halign = "center",
@@ -120,17 +126,28 @@ add_worksheet_data <- function (wb,
                                              halign = "center",
                                              valign = "center",
                                              numFmt = "ddmmmyyyy")
+  contentStyleDateTimes <- openxlsx::createStyle(border = "TopBottomLeftRight",
+                                                 wrapText = TRUE,
+                                                 halign = "center",
+                                                 valign = "center",
+                                                 numFmt = "ddmmmyyyy hh:mm:ss")
   openxlsx::addStyle(wb,
                      sheet = sheet_name,
                      style = contentStyleGeneral,
                      rows = body_rows,
-                     cols = which(col_classes != "Date"),
+                     cols = which(!col_classes %in% c("Date", "POSIX")),
                      gridExpand = TRUE)
   openxlsx::addStyle(wb,
                      sheet = sheet_name,
                      style = contentStyleDates,
                      rows = body_rows,
                      cols = which(col_classes == "Date"),
+                     gridExpand = TRUE)
+  openxlsx::addStyle(wb,
+                     sheet = sheet_name,
+                     style = contentStyleDateTimes,
+                     rows = body_rows,
+                     cols = which(col_classes == "POSIX"),
                      gridExpand = TRUE)
 
   ## conditional formatting
