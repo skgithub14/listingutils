@@ -25,7 +25,7 @@ match_record_by_joining <- function(df1,
                                     na_matches="never") {
 
 
-    colnames(df1)<-paste0(colnames(df1), suffix[1])
+    colnames(df1) <- paste0(colnames(df1), suffix[1])
     colnames(df2) <- paste0(colnames(df2), suffix[2])
     col_num <- ncol(df1)
 
