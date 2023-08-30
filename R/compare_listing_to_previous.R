@@ -17,16 +17,16 @@ compare_listing_to_previous <- function (listing, prev_report) {
   if (is.null(prev_report)) {
     listing$`Discrepancy Change` <- "New"
   } else {
-    comp <- compare_df(df_new = listing,
-                       df_old = prev_report,
-                       group_col = colnames(listing),
-                       stop_on_error = F,
-                       keep_unchanged_rows = T)
+    comp <- compareDF::compare_df(df_new = listing,
+                                  df_old = prev_report,
+                                  group_col = colnames(listing),
+                                  stop_on_error = F,
+                                  keep_unchanged_rows = T)
     listing_c <- comp$comparison_df %>%
-      group_by(grp) %>%
-      mutate(
-        grp_cnt = row_number(),
-        `Discrepancy Change` = case_when(
+      dplyr::group_by(grp) %>%
+      dplyr::mutate(
+        grp_cnt = dplyr::row_number(),
+        `Discrepancy Change` = dplyr::case_when(
           all("=" == chng_type) ~ "Old",
           all(grp_cnt == 1) & chng_type == "-" ~ "Deleted",
           all(grp_cnt == 1) & chng_type == "+" ~ "New",
@@ -34,7 +34,7 @@ compare_listing_to_previous <- function (listing, prev_report) {
           TRUE ~ NA_character_
         )
       ) %>%
-      ungroup() %>%
+      dplyr::ungroup() %>%
 
       # check for unhandled Discrepancy Change cases
       {
@@ -46,7 +46,7 @@ compare_listing_to_previous <- function (listing, prev_report) {
       } %>%
 
       # remove deleted records and records from the previous run
-      filter(`Discrepancy Change` != "Deleted" &
+      dplyr::filter(`Discrepancy Change` != "Deleted" &
                !(`Discrepancy Change` == "Changed" & chng_type == "-") &
                !(`Discrepancy Change` == "Unchanged" & grp_cnt == 2))
   }

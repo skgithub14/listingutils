@@ -253,7 +253,7 @@ populate_worksheet <- function (wb, sheet_name, data, header) {
   wb <- add_worksheet_data(wb = wb,
                            data = data,
                            sheet_name = sheet_name,
-                           start_row = length(h_data) + 1)
+                           start_row = length(header) + 1)
 
   return(wb)
 }
@@ -284,16 +284,16 @@ populate_workbook <- function (wb, sheet_names, sheet_data, sheet_headers) {
     for (sheet_name in sheet_names) {
       wb <- populate_worksheet(wb = wb,
                                sheet_name = sheet_name,
-                               body_dat = sheet_data[[sheet_name]],
-                               header_dat = sheet_headers[[1]])
+                               data = sheet_data[[sheet_name]],
+                               header = sheet_headers[[1]])
 
     }
   } else if (length(sheet_headers) > 1) {
     for (sheet_name in sheet_names) {
       wb <- populate_worksheet(wb = wb,
                                sheet_name = sheet_name,
-                               body_dat = sheet_data[[sheet_name]],
-                               header_dat = sheet_headers[[sheet_name]])
+                               data = sheet_data[[sheet_name]],
+                               header = sheet_headers[[sheet_name]])
 
     }
   } else {
