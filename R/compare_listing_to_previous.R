@@ -12,7 +12,7 @@
 #' @returns a data frame
 #' @export
 #'
-compare_listing_to_previous <- function (recon, prev_report) {
+compare_listing_to_previous <- function (listing, prev_report) {
 
   if (is.null(prev_report)) {
     listing$`Discrepancy Change` <- "New"

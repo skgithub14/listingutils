@@ -4,20 +4,24 @@
 \alias{add_worksheet_header}
 \title{Writes header data to Excel workbook}
 \usage{
-add_worksheet_header(wb, sheet_name, h_data, dat)
+add_worksheet_header(wb, sheet_name, header, data)
 }
 \arguments{
-\item{wb}{an [openxlsx::createWorkbook()] object}
+\item{wb}{an `openxlsx` `Workbook` object}
 
-\item{sheet_name}{a string, the sheet name in `wb` to write to}
+\item{sheet_name}{string, the sheet name to create}
 
-\item{h_data}{a list where each element corresponds to one row in the header}
+\item{header}{a list of strings where each element corresponds to one row in
+the header}
 
-\item{dat}{a data frame of the data that will be written below the header}
+\item{data}{data frame of the data for `sheet_name`}
 }
 \value{
-a modified [openxlsx::createWorkbook()] object
+an `openxlsx` `Workbook` object
 }
 \description{
 Writes the meta data to the top rows of an Excel workbook and formats them
+}
+\seealso{
+[add_worksheet_data()], [setup_workbook()]
 }

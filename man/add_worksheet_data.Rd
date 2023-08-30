@@ -2,33 +2,33 @@
 % Please edit documentation in R/excel.R
 \name{add_worksheet_data}
 \alias{add_worksheet_data}
-\title{Writes a data frame to Excel workbook with formatting}
+\title{Writes a data frame to an Excel workbook with formatting}
 \usage{
 add_worksheet_data(
   wb,
   sheet_name,
-  dat,
+  data,
   start_row,
-  disrepancy_col = "Discrepancy Change",
+  discrepancy_col = "Discrepancy Change",
   match_text = "Data match",
   finding_col = "Finding"
 )
 }
 \arguments{
-\item{wb}{an [openxlsx::createWorkbook()] object}
+\item{wb}{an `openxlsx` `Workbook` object}
 
-\item{sheet_name}{string, the sheet name to write to}
+\item{sheet_name}{string, the sheet name to create}
 
-\item{dat}{data frame, the data to write}
+\item{data}{data frame of the data for `sheet_name`}
 
-\item{start_row}{integer, the row number at which the write the column header
-of `dat`}
+\item{start_row}{integer, the row number at which to write the column header
+of `data`}
 
-\item{disrepancy_col}{a string, the column name for discrepancy change
+\item{discrepancy_col}{a string, the column name for discrepancy change
 tracking between report versions, default is `"Discrepancy Change"`}
 
-\item{match_text}{a string, text that identifies data match in
-`disrepancy_col`, default is `"Data match"`}
+\item{match_text}{a string, text that identifies a data match in
+`discrepancy_col`, default is `"Data match"`}
 
 \item{finding_col}{a string, the column name for reconciliation findings,
 default is `"Finding"`}
@@ -39,4 +39,7 @@ a modified [openxlsx::createWorkbook()] object
 \description{
 Writes a data frame to the specified sheet in an Excel workbook and applies
 formatting, conditional formatting, freeze panes, and filters.
+}
+\seealso{
+[add_worksheet_header()], [setup_workbook()]
 }

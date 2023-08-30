@@ -72,12 +72,12 @@ setup_multi_sheet_workbook <- function (sheet_names, sheet_data) {
 #'
 #' @seealso [add_worksheet_data()], [setup_workbook()]
 #'
-add_worksheet_header <- function (wb, sheet_name, header, dat) {
+add_worksheet_header <- function (wb, sheet_name, header, data) {
 
   for (hd in seq_along(header)) {
 
     openxlsx::writeData(wb, sheet = sheet_name, x = header[[hd]], startRow = hd)
-    openxlsx::mergeCells(wb, sheet = sheet_name, rows = hd, cols = 1:ncol(dat))
+    openxlsx::mergeCells(wb, sheet = sheet_name, rows = hd, cols = 1:ncol(data))
 
     if (hd == 1) {
       study_style <- openxlsx::createStyle(fontSize = 15,
@@ -86,7 +86,7 @@ add_worksheet_header <- function (wb, sheet_name, header, dat) {
                          sheet = sheet_name,
                          study_style,
                          rows = 1,
-                         cols = 1:ncol(dat),
+                         cols = 1:ncol(data),
                          gridExpand = TRUE)
     }
   }
@@ -104,7 +104,7 @@ add_worksheet_header <- function (wb, sheet_name, header, dat) {
 #' @inheritParams setup_workbook
 #' @param start_row integer, the row number at which to write the column header
 #' of `data`
-#' @param disrepancy_col a string, the column name for discrepancy change
+#' @param discrepancy_col a string, the column name for discrepancy change
 #' tracking between report versions, default is `"Discrepancy Change"`
 #' @param match_text a string, text that identifies a data match in
 #' `discrepancy_col`, default is `"Data match"`
@@ -208,7 +208,7 @@ add_worksheet_data <- function (wb,
   openxlsx::conditionalFormatting(wb,
                                   sheet = sheet_name,
                                   rows = body_rows,
-                                  cols = which(colnames(data) == disrepancy_col),
+                                  cols = which(colnames(data) == discrepancy_col),
                                   rule = "Change",
                                   type = "contains",
                                   style = ChangeChangeStyle)
@@ -219,7 +219,7 @@ add_worksheet_data <- function (wb,
   openxlsx::conditionalFormatting(wb,
                                   sheet = sheet_name,
                                   rows = body_rows,
-                                  cols = which(colnames(data) == disrepancy_col),
+                                  cols = which(colnames(data) == discrepancy_col),
                                   rule = "New",
                                   type = "contains",
                                   style = ChangeNewStyle)
