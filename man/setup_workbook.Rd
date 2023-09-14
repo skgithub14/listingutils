@@ -2,24 +2,28 @@
 % Please edit documentation in R/excel.R
 \name{setup_workbook}
 \alias{setup_workbook}
-\title{Set-up Excel workbook with standard options}
+\title{Set-up Excel workbook with one worksheet}
 \usage{
-setup_workbook(sheet_name, dat)
+setup_workbook(sheet_name, data)
 }
 \arguments{
-\item{sheet_name}{string, the sheet name to create for `dat`}
+\item{sheet_name}{string, the sheet name to create}
 
-\item{dat}{data frame of the data for the sheet}
+\item{data}{data frame of the data for `sheet_name`}
 }
 \value{
-a [openxlsx::createWorkbook()] workbook object
+an `openxlsx` `Workbook` object
 }
 \description{
-Creates a [openxlsx::createWorkbook()] object, adds a worksheet, sets column
-widths to auto and configures options for borders, dates and maximum column
-widths.
+Creates an [openxlsx::createWorkbook()] object, adds a worksheet, and sets
+column widths to 19. This function should be used when creating workbooks
+with one and only one sheet. For multi-sheet workbooks, see
+[setup_multi_sheet_workbook()].
 }
 \details{
-No data is written to the workbook. The `dat` argument is just for configuring
-options for the correct number of columns.
+No data is written to the workbook. The `data` argument is just for
+configuring options for the correct number of columns.
+}
+\seealso{
+[setup_multi_sheet_workbook()]
 }
