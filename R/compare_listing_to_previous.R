@@ -14,8 +14,14 @@
 #'
 compare_listing_to_previous <- function (listing, prev_report) {
 
+  if(nrow(listing) == 0) return(listing)
+
   if (is.null(prev_report)) {
     listing$`Discrepancy Change` <- "New"
+
+  } else if (nrow(prev_report) == 0) {
+    listing$`Discrepancy Change` <- "New"
+
   } else {
     comp <- compareDF::compare_df(df_new = listing,
                                   df_old = prev_report,
