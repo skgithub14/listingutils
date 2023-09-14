@@ -191,38 +191,42 @@ add_worksheet_data <- function (wb,
                      gridExpand = TRUE)
 
   ## conditional formatting
-  # mark non-Data Matches in the Discrepancy column
-  FindingNotMatchStyle <- openxlsx::createStyle(fontColour = "#FF0000",
-                                                bgFill = "#FFFF00")
-  openxlsx::conditionalFormatting(wb,
-                                  sheet = sheet_name,
-                                  rows = body_rows,
-                                  cols = which(colnames(data) == finding_col),
-                                  rule = paste0("!=\"", match_text,"\""),
-                                  type = "expression",
-                                  style = FindingNotMatchStyle)
+  # mark non-Data Matches in the Finding column
+  if (finding_col %in% colnames(data)) {
+    FindingNotMatchStyle <- openxlsx::createStyle(fontColour = "#FF0000",
+                                                  bgFill = "#FFFF00")
+    openxlsx::conditionalFormatting(wb,
+                                    sheet = sheet_name,
+                                    rows = body_rows,
+                                    cols = which(colnames(data) == finding_col),
+                                    rule = paste0("!=\"", match_text,"\""),
+                                    type = "expression",
+                                    style = FindingNotMatchStyle)
+  }
 
   # mark "Changes" in the Change column
-  ChangeChangeStyle <- openxlsx::createStyle(fontColour = "#FF0000",
-                                             bgFill = "#FFFF00")
-  openxlsx::conditionalFormatting(wb,
-                                  sheet = sheet_name,
-                                  rows = body_rows,
-                                  cols = which(colnames(data) == discrepancy_col),
-                                  rule = "Change",
-                                  type = "contains",
-                                  style = ChangeChangeStyle)
+  if (discrepancy_col %in% colnames(data)) {
+    ChangeChangeStyle <- openxlsx::createStyle(fontColour = "#FF0000",
+                                               bgFill = "#FFFF00")
+    openxlsx::conditionalFormatting(wb,
+                                    sheet = sheet_name,
+                                    rows = body_rows,
+                                    cols = which(colnames(data) == discrepancy_col),
+                                    rule = "Change",
+                                    type = "contains",
+                                    style = ChangeChangeStyle)
 
-  # mark "New" entries in the Change column
-  ChangeNewStyle <- openxlsx::createStyle(fontColour = "#00FF00",
-                                          bgFill = "#FFFF00")
-  openxlsx::conditionalFormatting(wb,
-                                  sheet = sheet_name,
-                                  rows = body_rows,
-                                  cols = which(colnames(data) == discrepancy_col),
-                                  rule = "New",
-                                  type = "contains",
-                                  style = ChangeNewStyle)
+    # mark "New" entries in the Change column
+    ChangeNewStyle <- openxlsx::createStyle(fontColour = "#00FF00",
+                                            bgFill = "#FFFF00")
+    openxlsx::conditionalFormatting(wb,
+                                    sheet = sheet_name,
+                                    rows = body_rows,
+                                    cols = which(colnames(data) == discrepancy_col),
+                                    rule = "New",
+                                    type = "contains",
+                                    style = ChangeNewStyle)
+  }
 
   return(wb)
 }
