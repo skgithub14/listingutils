@@ -1,3 +1,27 @@
+#' Make an Excel workbook
+#'
+#' Creates an [openxlsx::createWorkbook()] object with one or more sheets and
+#' populates header information and data for each sheet.
+#'
+#' @inheritParams setup_multi_sheet_workbook
+#' @inheritParams populate_workbook
+#'
+#' @returns an `openslxs` `Workbook` object
+#' @export
+#'
+#' @seealso [setup_workbook()], [setup_multi_sheet_workbook()],
+#' [populate_worksheet()], [populate_workbook()]
+#'
+create_excel_listing <- function (sheet_data, sheet_headers) {
+
+  wb <- setup_multi_sheet_workbook(sheet_data)
+  wb <- populate_workbook(wb = wb,
+                          sheet_data = sheet_data,
+                          sheet_headers = sheet_headers)
+  return(wb)
+}
+
+
 #' Set-up Excel workbook with one worksheet
 #'
 #' Creates an [openxlsx::createWorkbook()] object, adds a worksheet, and sets
@@ -17,6 +41,7 @@
 #' @seealso [setup_multi_sheet_workbook()]
 #'
 setup_workbook <- function (sheet_name, data) {
+
   wb <- openxlsx::createWorkbook()
   openxlsx::addWorksheet(wb, sheetName = sheet_name)
   openxlsx::setColWidths(wb,
@@ -35,23 +60,21 @@ setup_workbook <- function (sheet_name, data) {
 #' configuring options for the correct number of columns. The column widths are
 #' also set to 19.
 #'
-#' @param sheet_names a list of worksheet names
 #' @param sheet_data a named list of data frames containing the data for each
-#' worksheet; the names of `sheet_data` should match the contents of
-#' `sheet_names` and `sheet_data` should have the same length as `sheet_names`
+#' worksheet where the list names are the sheet names
 #'
 #' @returns an `openxlsx` `Workbook` object
 #' @export
 #'
 #' @seealso [setup_workbook()]
 #'
-setup_multi_sheet_workbook <- function (sheet_names, sheet_data) {
+setup_multi_sheet_workbook <- function (sheet_data) {
 
   wb <- openxlsx::createWorkbook()
 
-  purrr::walk2(sheet_names, sheet_data, ~ {
-    openxlsx::addWorksheet(wb, sheetName = .x)
-    openxlsx::setColWidths(wb, sheet = .x, cols = 1:ncol(.y), widths = 19)
+  purrr::iwalk(sheet_data, ~ {
+    openxlsx::addWorksheet(wb, sheetName = .y)
+    openxlsx::setColWidths(wb, sheet = .y, cols = 1:ncol(.x), widths = 19)
   })
 
   return(wb)
@@ -271,21 +294,42 @@ populate_worksheet <- function (wb, sheet_name, data, header) {
 #' @inheritParams add_worksheet_header
 #' @inheritParams setup_multi_sheet_workbook
 #' @param sheet_headers a named list of lists where each name is a sheet
-#' name in `wb` and each element is the header data for a worksheet in `wb`. The
-#' names of `sheet_headers` must match the elements of `sheet_names` and
-#' `length(sheet_headers)` must be equal to `length(sheet_name)` or `1`. If
+#' name in `wb` and each element is the header data for a worksheet in `wb`. If
 #' `length(sheet_headers) == 1`, `sheet_headers` will be recycled for every
-#' sheet in `wb`.
+#' sheet in `wb`. `names(sheet_data)` must match `names(sheet_headers)`.
 #'
 #' @returns an `openxlsx` Workbook object
 #' @export
 #'
 #' @seealso [populate_worksheet()], [setup_multi_sheet_workbook()]
 #'
-populate_workbook <- function (wb, sheet_names, sheet_data, sheet_headers) {
+populate_workbook <- function (wb, sheet_data, sheet_headers) {
 
+  # validate data is same length as headers or that length of sheet_headers == 1,
+  #  (sheet_headers will be recycled if length == 1)
+  if (length(sheet_data) != length(sheet_headers)) {
+    if (length(sheet_headers) != 1) {
+      stop("`length(sheet_headers)` must equal 1 or `length(sheet_data)`")
+    }
+  }
+
+  # validate sheet names in the data match the headers, or that length of
+  #  sheet_headers == 1 (sheet_headers will be recycled if length == 1)
+  if (length(sheet_data) == length(sheet_headers) &
+      length(sheet_headers) != 1) {
+
+    in_data_only <- setdiff(names(sheet_data), names(sheet_headers))
+    in_headers_only <- setdiff(names(sheet_headers), names(sheet_data))
+    mismatched <- c(in_data_only, in_headers_only)
+
+    if (length(mismatched) > 0) {
+      stop("`names(sheet_data)` must match `names(sheet_headers)`, else `length(sheet_headers)` must be 1")
+    }
+  }
+
+  # populate the worksheets
   if (length(sheet_headers) == 1) {
-    for (sheet_name in sheet_names) {
+    for (sheet_name in names(sheet_data)) {
       wb <- populate_worksheet(wb = wb,
                                sheet_name = sheet_name,
                                data = sheet_data[[sheet_name]],
@@ -293,7 +337,7 @@ populate_workbook <- function (wb, sheet_names, sheet_data, sheet_headers) {
 
     }
   } else if (length(sheet_headers) > 1) {
-    for (sheet_name in sheet_names) {
+    for (sheet_name in names(sheet_data)) {
       wb <- populate_worksheet(wb = wb,
                                sheet_name = sheet_name,
                                data = sheet_data[[sheet_name]],
