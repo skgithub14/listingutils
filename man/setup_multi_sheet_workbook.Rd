@@ -4,14 +4,11 @@
 \alias{setup_multi_sheet_workbook}
 \title{Set-up Excel workbook with multiple worksheets}
 \usage{
-setup_multi_sheet_workbook(sheet_names, sheet_data)
+setup_multi_sheet_workbook(sheet_data)
 }
 \arguments{
-\item{sheet_names}{a list of worksheet names}
-
 \item{sheet_data}{a named list of data frames containing the data for each
-worksheet; the names of `sheet_data` should match the contents of
-`sheet_names` and `sheet_data` should have the same length as `sheet_names`}
+worksheet where the list names are the sheet names}
 }
 \value{
 an `openxlsx` `Workbook` object
