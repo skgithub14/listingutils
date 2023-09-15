@@ -14,7 +14,9 @@
 #'
 compare_listing_to_previous <- function (listing, prev_report) {
 
-  if(nrow(listing) == 0) return(listing)
+  if(nrow(listing) == 0) {
+    return(listing)
+  }
 
   if (is.null(prev_report)) {
     listing$`Discrepancy Change` <- "New"
