@@ -1,7 +1,7 @@
 Package: listingutils
 Type: Package
 Title: Utilities for Data Listings
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: c(
     person("Stephen", "Knapp", , "stephen@knappconsultingllc.com", 
            role = c("aut", "cre"),
