@@ -17,10 +17,10 @@ of `TRUE` or `FALSE` only (no `NA` values).
 Provides element-wise comparison of two vectors to determine if the values
 are equal. Comparison of two non-`NA` values is equivalent to the result
 of `value1 == value2`.`NA` compared to a non-`NA` values will return `TRUE`
-and `NA` compared to `NA` will return `FALSE`.
+and `NA` compared to `NA` will return `TRUE`.
 }
 \examples{
-# the below will return `c(FALSE, TRUE, TRUE, FALSE)`
+# the below will return `c(TRUE, FALSE, TRUE, TRUE)`
 c(1, 1, 1, NA) \%eqna\% c(1, 2, NA, NA)
 
 }
