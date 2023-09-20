@@ -4,22 +4,24 @@
 \alias{setup_multi_sheet_workbook}
 \title{Set-up Excel workbook with multiple worksheets}
 \usage{
-setup_multi_sheet_workbook(sheet_data)
+setup_multi_sheet_workbook(sheet_data, col_widths = 19)
 }
 \arguments{
 \item{sheet_data}{a named list of data frames containing the data for each
 worksheet where the list names are the sheet names}
+
+\item{col_widths}{a numeric value or `"auto"`, the column widths for all
+worksheets; default is `19`.}
 }
 \value{
 an `openxlsx` `Workbook` object
 }
 \description{
-Creates an [openxlsx::createWorkbook()] object and adds worksheets.
+Creates an [openxlsx::createWorkbook()] object and adds blank worksheets.
 }
 \details{
 No data is written to the workbook. The `data` argument is just for
-configuring options for the correct number of columns. The column widths are
-also set to 19.
+configuring options for the correct number of columns.
 }
 \seealso{
 [setup_workbook()]

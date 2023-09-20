@@ -4,12 +4,15 @@
 \alias{setup_workbook}
 \title{Set-up Excel workbook with one worksheet}
 \usage{
-setup_workbook(sheet_name, data)
+setup_workbook(sheet_name, data, col_widths = 19)
 }
 \arguments{
 \item{sheet_name}{string, the sheet name to create}
 
 \item{data}{data frame of the data for `sheet_name`}
+
+\item{col_widths}{a numeric value or `"auto"`, the column widths for all
+worksheets; default is `19`.}
 }
 \value{
 an `openxlsx` `Workbook` object

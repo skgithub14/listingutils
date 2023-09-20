@@ -34,47 +34,52 @@ create_excel_listing <- function (sheet_data, sheet_headers) {
 #'
 #' @param sheet_name string, the sheet name to create
 #' @param data data frame of the data for `sheet_name`
+#' @param col_widths a numeric value or `"auto"`, the column widths for all
+#'  worksheets; default is `19`.
 #'
 #' @returns an `openxlsx` `Workbook` object
 #' @export
 #'
 #' @seealso [setup_multi_sheet_workbook()]
 #'
-setup_workbook <- function (sheet_name, data) {
+setup_workbook <- function (sheet_name, data, col_widths = 19) {
 
   wb <- openxlsx::createWorkbook()
   openxlsx::addWorksheet(wb, sheetName = sheet_name)
   openxlsx::setColWidths(wb,
                          sheet = sheet_name,
                          cols = 1:ncol(data),
-                         widths = 19)
+                         widths = col_widths)
   return(wb)
 }
 
 
 #' Set-up Excel workbook with multiple worksheets
 #'
-#' Creates an [openxlsx::createWorkbook()] object and adds worksheets.
+#' Creates an [openxlsx::createWorkbook()] object and adds blank worksheets.
 #'
 #' No data is written to the workbook. The `data` argument is just for
-#' configuring options for the correct number of columns. The column widths are
-#' also set to 19.
+#' configuring options for the correct number of columns.
 #'
 #' @param sheet_data a named list of data frames containing the data for each
-#' worksheet where the list names are the sheet names
+#'  worksheet where the list names are the sheet names
+#' @inheritParams setup_workbook
 #'
 #' @returns an `openxlsx` `Workbook` object
 #' @export
 #'
 #' @seealso [setup_workbook()]
 #'
-setup_multi_sheet_workbook <- function (sheet_data) {
+setup_multi_sheet_workbook <- function (sheet_data, col_widths = 19) {
 
   wb <- openxlsx::createWorkbook()
 
   purrr::iwalk(sheet_data, ~ {
     openxlsx::addWorksheet(wb, sheetName = .y)
-    openxlsx::setColWidths(wb, sheet = .y, cols = 1:ncol(.x), widths = 19)
+    openxlsx::setColWidths(wb,
+                           sheet = .y,
+                           cols = 1:ncol(.x),
+                           widths = col_widths)
   })
 
   return(wb)

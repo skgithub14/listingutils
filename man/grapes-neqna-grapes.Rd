@@ -7,11 +7,11 @@
 e1 \%neqna\% e2
 }
 \arguments{
-\item{e1, e2}{vectors of equal length to compare that can be of any class}
+\item{e1, e2}{vectors to compare; must be of equal length and have the same
+class}
 }
 \value{
 a vector of length equal to `e1` and `e2` containing logical values
-of `TRUE` or `FALSE` only (no `NA` values).
 }
 \description{
 Provides element-wise comparison of two vectors to determine if the values
