@@ -6,7 +6,7 @@
 #' @inheritParams setup_multi_sheet_workbook
 #' @inheritParams populate_workbook
 #'
-#' @returns an `openslxs` `Workbook` object
+#' @returns an `openxlsx` `Workbook` object
 #' @export
 #'
 #' @seealso [setup_workbook()], [setup_multi_sheet_workbook()],
@@ -168,7 +168,13 @@ add_worksheet_data <- function (wb,
                       startRow = start_row,
                       borders = "all",
                       headerStyle = headerStyle,
-                      withFilter = T)
+                      withFilter = F)
+
+  # add filter (this will ensure filter does not extend to footnotes)
+  openxlsx::addFilter(wb,
+                      sheet = sheet_name,
+                      rows = start_row:(1+nrow(data)),
+                      cols = 1:ncol(data))
 
   ## table body formatting
   body_start <- start_row + 1

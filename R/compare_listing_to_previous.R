@@ -63,3 +63,63 @@ compare_listing_to_previous <- function (listing, prev_report) {
 }
 
 
+#' Compare a data frame listing to a previous version
+#'
+#' Compares a data frame listing to a previous version by annotating which rows
+#' were deleted, changed, or are new.
+#'
+#' An error will be raised if a row cannot be categorized into deleted, changed,
+#' or new.
+#'
+#' @param listing a data frame of with the new data
+#' @param prev_report a data frame with the old data
+#' @param unique_row_id a string, the name of the column that links unique row
+#' IDs between `listing` and `prev_report`, usually a concatenation of other
+#' column values that collectively make a unique ID; default is `"Unique_Row_ID"`
+#' @param finding_col a string, the name of the column that describes row
+#' discrepancies or issues, default is `"Finding"`
+#' @param change_col a string, the name of the column to record changes; default
+#' is `"Discrepancy Change"`
+#'
+#' @returns a data frame
+#' @export
+#'
+categorize_finding_change <- function (listing,
+                                       prev_report,
+                                       unique_row_id = "Unique_Row_ID",
+                                       finding_col = "Finding",
+                                       change_col = "Discrepancy Change") {
+
+  if(nrow(listing) == 0) return(listing)
+
+  if (is.null(prev_report)) {
+    listing[[change_col]] <- "New"
+
+  } else if (nrow(prev_report) == 0) {
+    listing[[change_col]] <- "New"
+
+  } else {
+    prev_report_cols <- dplyr::select(prev_report,
+                                      tidyselect::all_of(c(unique_row_id,
+                                                           finding_col)))
+
+    unique_row_ids_in_prev <- unique(prev_report[[unique_row_id]])
+
+    listing <- listing %>%
+      dplyr::left_join(prev_report_cols,
+                       by = unique_row_id,
+                       suffix = c("", ".prev")) %>%
+      dplyr::mutate(
+        "{change_col}" := dplyr::case_when(
+          !(!!rlang::sym(unique_row_id)) %in% unique_row_ids_in_prev ~ "New",
+          (!!rlang::sym(finding_col)) == (!!rlang::sym(paste0(finding_col, ".prev"))) ~ "Old",
+          (!!rlang::sym(finding_col)) %neqna% (!!rlang::sym(paste0(finding_col, ".prev"))) ~ "Changed",
+          TRUE ~ NA_character_
+        )
+      ) %>%
+      dplyr::select(-tidyselect::all_of(paste0(finding_col, ".prev")))
+
+  }
+
+  return(listing)
+}
