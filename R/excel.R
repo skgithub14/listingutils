@@ -168,13 +168,7 @@ add_worksheet_data <- function (wb,
                       startRow = start_row,
                       borders = "all",
                       headerStyle = headerStyle,
-                      withFilter = F)
-
-  # add filter (this will ensure filter does not extend to footnotes)
-  openxlsx::addFilter(wb,
-                      sheet = sheet_name,
-                      rows = start_row:(1+nrow(data)),
-                      cols = 1:ncol(data))
+                      withFilter = T)
 
   ## table body formatting
   body_start <- start_row + 1
