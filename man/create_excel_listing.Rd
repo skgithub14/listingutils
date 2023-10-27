@@ -16,7 +16,7 @@ name in `wb` and each element is the header data for a worksheet in `wb`. If
 sheet in `wb`. `names(sheet_data)` must match `names(sheet_headers)`.}
 }
 \value{
-an `openslxs` `Workbook` object
+an `openxlsx` `Workbook` object
 }
 \description{
 Creates an [openxlsx::createWorkbook()] object with one or more sheets and
