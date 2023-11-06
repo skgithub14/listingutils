@@ -25,13 +25,15 @@ add_worksheet_data(
 of `data`}
 
 \item{discrepancy_col}{a string, the column name for discrepancy change
-tracking between report versions, default is `"Discrepancy Change"`}
+tracking between report versions, default is `"Discrepancy Change"`. If set
+to `NULL`, conditional formatting for discrepancy change will not be applied.}
 
 \item{match_text}{a string, text that identifies a data match in
 `discrepancy_col`, default is `"Data match"`}
 
 \item{finding_col}{a string, the column name for reconciliation findings,
-default is `"Finding"`}
+default is `"Finding"`. If set to `NULL`, conditional formatting for
+discrepancy change will not be applied.}
 }
 \value{
 a modified [openxlsx::createWorkbook()] object
