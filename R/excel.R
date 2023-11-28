@@ -654,29 +654,15 @@ write_data_table_to_sheet <- function(wb,
                          widths = default_wd)
 
   # calculate and check column widths
-  if (!is.null(narrow_cols) & is.null(narrow_wd)) {
-    narrow_wd <- default_wd * 0.5
-  }
-  if (narrow_wd >= default_wd) {
-    warning("narrow_wd >= default_wd")
-  }
+  if (is.null(narrow_wd)) narrow_wd <- default_wd * 0.5
+  if (narrow_wd >= default_wd) warning("narrow_wd >= default_wd")
 
-  if (!is.null(wide_cols) & is.null(wide_wd)) {
-    wide_wd <- default_wd * 1.5
-  }
-  if (wide_wd <= default_wd) {
-    warning("wide_wd <= default_wd")
-  }
+  if (is.null(wide_wd)) wide_wd <- default_wd * 1.5
+  if (wide_wd <= default_wd) warning("wide_wd <= default_wd")
 
-  if (!is.null(xwide_cols) & is.null(xwide_wd)) {
-    xwide_wd <- default_wd * 2
-  }
-  if (xwide_wd <= default_wd) {
-    warning("xwide_wd <= default_wd")
-  }
-  if (xwide_wd <= wide_wd) {
-    warning("xwide_wd <= wide_wd")
-  }
+  if (is.null(xwide_wd)) xwide_wd <- default_wd * 2
+  if (xwide_wd <= default_wd) warning("xwide_wd <= default_wd")
+  if (xwide_wd <= wide_wd) warning("xwide_wd <= wide_wd")
 
   # change user specified column widths from default
   purrr::walk2(list(narrow_cols, wide_cols, xwide_cols),
