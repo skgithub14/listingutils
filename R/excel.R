@@ -363,4 +363,333 @@ populate_workbook <- function (wb, sheet_data, sheet_headers) {
 }
 
 
+#' Write a data frame or tibble to Excel worksheet with features and formatting
+#'
+#' @description Writes a data frame/tibble to an Excel worksheet with the
+#'   following features:
+#'  - Column labels/descriptions a row above the header
+#'  - Filters
+#'  - Freeze panes
+#'  - Rounding
+#'  - Conversion to percentage
+#'  - Date and date/time formatting
+#'  - Header and cell styling (alignment, wrap, borders)
+#'  - Column widths (default, narrow, wide, and extra wide widths)
+#'
+#' @param wb the `openxlsx` `Workbook` object to modify
+#' @param sheet_name a string, the sheet name in `wb` to modify
+#' @param df the data frame or tibble to write
+#' @param start_row a numeric value, the row to start writing the table; if
+#'   `col_labels` is not `NULL` then the column labels will be written to this
+#'   row with the column names the row below them, otherwise the column names
+#'   will be written here
+#' @param col_labels an optional named character vector of column labels where
+#'   names are the column names in `df`; if present, column labels are added to
+#'   the row directly above the column titles
+#' @param col_label_row_ht an optional numeric value, if `col_labels` is not
+#'   `NULL`, sets the height of the column label row; default is `60`
+#' @param withFilter a logical value indicating if column filtering should be
+#'   turned on; default is `TRUE`
+#' @param freeze_header a logical value indicating whether the header row should
+#'   be frozen; default is `TRUE`
+#' @param last_frozen_col an optional string, the column name in `df` which
+#'   should be the last frozen column; default is `NULL` in which case no
+#'   columns will be frozen
+#' @param num_cols an optional named numeric vector where the names are column
+#'   names in `df` that are numeric columns and the values are number of decimal
+#'   places each column should be rounded to; default is `NULL`, in which case
+#'   any numeric columns not listed in `perc_cols` will use Excel's general cell
+#'   format
+#' @param perc_cols an optional named numeric vector where the names are column
+#'   names in `df` that are percentage columns and the values are number of
+#'   decimal places each column should be rounded to; default is `NULL`, in
+#'   which case any numeric columns not specified in `num_cols` will use Excel's
+#'   general cell format. Note, any column specified in this argument will be
+#'   multiplies by 100.
+#' @param dateFormat a string specifying the format of Date class columns using
+#'   the `openxlsx` specification; default is `"ddmmmyyyy"`
+#' @param dateTimeFormat a string specifying the format of the date/time class
+#'   columns (`c("POSIXlt", "POSIXt", "POSIXct")`) using the `openxlsx`
+#'   specification; default is `"ddmmmyyyy hh:mm:ss"`
+#' @param border a string specifying the cell borders for all cells using the
+#'   `openxlsx` border specification; default is `"TopBottomLeftRight"`
+#' @param wrapText a logical value indicating if all cells should wrap text;
+#'   default is `TRUE`
+#' @param halign,valign string values indicating the horizontal and vertical
+#'   cell alignment for all cells using the `openxlsx` specification; default is
+#'   `center`
+#' @param fontSize a numeric value specifying the font size for all cells;
+#'   default is `11`
+#' @param header_textDecoration a string describing the text styling for the
+#'   column name and label rows using the `openxlsx` specification; default is
+#'   `"bold"`
+#' @param header_fgFill a string containing a color hex code which will be used
+#'   to color the column name and label rows; default is `"#b3d9e5"` (light
+#'   blue)
+#' @param default_wd a numeric value specifying the default column width;
+#'   default is `20`
+#' @param narrow_cols,wide_cols,xwide_cols optional character vectors of column
+#'   names which will be made narrower, wider or extra wide; default is `NULL`
+#' @param narrow_wd,wide_wd,xwide_wd optional numeric values which specify the
+#'   column widths for the columns specified in the `narrow_cols`, `wid_cols`,
+#'   and `xwide_cols` arguments, respectively; default is `NULL` in which case,
+#'   `narrow_wd = 0.5 * default_wd`, `wide_wd = 1.5 * default_wd`, and
+#'   `xwide_wd = 2 * default_wd`
+#'
+#' @returns a modified `openxlsx` `Workbook` object
+#' @export
+#'
+write_data_table_to_sheet <- function(wb,
+                                      sheet_name,
+                                      df,
+                                      start_row,
 
+                                      col_labels = NULL,
+                                      col_label_row_ht = 60,
+
+                                      withFilter = TRUE,
+                                      freeze_header = TRUE,
+                                      last_frozen_col = NULL,
+
+                                      num_cols = NULL,
+                                      perc_cols = NULL,
+                                      dateFormat = "ddmmmyyyy",
+                                      dateTimeFormat = "ddmmmyyyy hh:mm:ss",
+
+                                      border = "TopBottomLeftRight",
+                                      wrapText = TRUE,
+                                      halign = "center",
+                                      valign = "center",
+                                      fontSize = 11,
+                                      header_textDecoration = "bold",
+                                      header_fgFill = "#b3d9e5",
+
+                                      default_wd = 20,
+                                      narrow_cols = NULL,
+                                      wide_cols = NULL,
+                                      xwide_cols = NULL,
+                                      narrow_wd = NULL,
+                                      wide_wd = NULL,
+                                      xwide_wd = NULL) {
+
+  headerStyle <- openxlsx::createStyle(
+    border = border,
+    wrapText = wrapText,
+    halign = halign,
+    valign = valign,
+    fontSize = fontSize,
+    textDecoration = header_textDecoration,
+    fgFill = header_fgFill
+  )
+
+  # optionally, add a row of column labels above the main table
+  if (!is.null(col_labels)) {
+
+    # check all column names are present
+    missing_labels <- setdiff(colnames(df), names(col_labels))
+    if (length(missing_labels) > 0) {
+      stop("There are column names in df without a label in col_labels")
+    }
+
+    # ensure the label list is in the same order as the column names
+    col_labels <- col_labels[colnames(df)]
+
+    # write the column labels row as the 1st row of the table
+    purrr::iwalk(col_labels,
+                 ~ openxlsx::writeData(wb,
+                                       sheet = sheet_name,
+                                       .x,
+                                       startRow = start_row,
+                                       startCol = which(colnames(df) == .y)))
+    openxlsx::addStyle(wb,
+                       sheet = sheet_name,
+                       style = headerStyle,
+                       rows = start_row,
+                       cols = 1:ncol(df))
+
+    # restrict height of label row
+    openxlsx::setRowHeights(wb,
+                            sheet = sheet_name,
+                            rows = start_row,
+                            heights = col_label_row_ht)
+
+    # set the start row of the data table header
+    table_start_row <- start_row + 1
+
+  } else {
+    table_start_row <- start_row
+  }
+
+  # add the data with header and filters
+  openxlsx::writeData(wb,
+                      sheet = sheet_name,
+                      x = df,
+                      colNames = TRUE,
+                      startRow = table_start_row,
+                      headerStyle = headerStyle,
+                      withFilter = withFilter)
+
+  # format the table body, if there is data
+  if (nrow(df) > 0){
+
+    # apply default style to all rows and columns
+    contentStyleGeneral <- openxlsx::createStyle(
+      border = border,
+      wrapText = wrapText,
+      halign = halign,
+      valign = valign,
+      fontSize = fontSize
+    )
+    openxlsx::addStyle(wb,
+                       sheet = sheet_name,
+                       style = contentStyleGeneral,
+                       rows = table_start_row + seq(1, nrow(df)),
+                       cols = seq(1, ncol(df)),
+                       gridExpand = TRUE)
+
+    # apply numeric style with user specified rounding by column name
+    if (!is.null(num_cols)) {
+      purrr::iwalk(num_cols, {
+        round_format <- paste0("0.", rep("0", .x))
+        contentStyleNumRnd <- openxlsx::createStyle(
+          border = border,
+          wrapText = wrapText,
+          halign = halign,
+          valign = valign,
+          fontSize = fontSize,
+          numFmt = round_format
+        )
+        openxlsx::addStyle(wb,
+                           sheet = sheet_name,
+                           style = contentStyleNumRnd,
+                           rows = table_start_row + seq(1, nrow(df)),
+                           cols = which(colnames(df) %in% .y),
+                           gridExpand = TRUE)
+      })
+    }
+
+    # apply percent style with user specified rounding by column name
+    if (!is.null(perc_cols)) {
+      purrr::iwalk(perc_cols, {
+        round_format <- paste0("0.", rep("0", .x), "%")
+        contentStylePercRnd <- openxlsx::createStyle(
+          border = border,
+          wrapText = wrapText,
+          halign = halign,
+          valign = valign,
+          fontSize = fontSize,
+          numFmt = round_format
+        )
+        openxlsx::addStyle(wb,
+                           sheet = sheet_name,
+                           style = contentStylePercRnd,
+                           rows = table_start_row + seq(1, nrow(df)),
+                           cols = which(colnames(df) %in% .y),
+                           gridExpand = TRUE)
+      })
+    }
+
+    # add date and time styles
+    col_classes <- purrr::modify(colnames(df), ~ class(df[[.]])[1])
+    contentStyleDates <- openxlsx::createStyle(
+      border = border,
+      wrapText = wrapText,
+      halign = halign,
+      valign = valign,
+      fontSize = fontSize,
+      numFmt = dateFormat
+    )
+    openxlsx::addStyle(wb,
+                       sheet = sheet_name,
+                       style = contentStyleDates,
+                       rows = table_start_row + seq(1, nrow(df)),
+                       cols = which(col_classes == "Date"),
+                       gridExpand = TRUE)
+    contentStyleDateTimes <- openxlsx::createStyle(
+      border = border,
+      wrapText = wrapText,
+      halign = halign,
+      valign = valign,
+      fontSize = fontSize,
+      numFmt = dateTimeFormat
+    )
+    openxlsx::addStyle(
+      wb,
+      sheet = sheet_name,
+      style = contentStyleDateTimes,
+      rows = table_start_row + seq(1, nrow(df)),
+      cols = which(col_classes %in% c("POSIXlt", "POSIXt", "POSIXct")),
+      gridExpand = TRUE
+    )
+  }
+
+  # freeze column names and user specified left most columns
+  if (!is.null(last_frozen_col) & freeze_header) {
+    openxlsx::freezePane(
+      wb,
+      sheet = sheet_name,
+      firstActiveRow = table_start_row + 1,
+      firstActiveCol = which(colnames(df) == last_frozen_col) + 1
+    )
+
+  } else if (!is.null(last_frozen_col) & !freeze_header) {
+    openxlsx::freezePane(
+      wb,
+      sheet = sheet_name,
+      firstActiveCol = which(colnames(df) == last_frozen_col) + 1
+    )
+
+  } else if (is.null(last_frozen_col) & freeze_header) {
+    openxlsx::freezePane(
+      wb,
+      sheet = sheet_name,
+      firstActiveRow = table_start_row + 1
+    )
+  }
+
+  # set default columns widths
+  openxlsx::setColWidths(wb,
+                         sheet = sheet_name,
+                         cols = 1:ncol(df),
+                         widths = default_wd)
+
+  # calculate and check column widths
+  if (!is.null(narrow_cols) & is.null(narrow_wd)) {
+    narrow_wd <- default_wd * 0.5
+  }
+  if (narrow_wd >= default_wd) {
+    warning("narrow_wd >= default_wd")
+  }
+
+  if (!is.null(wide_cols) & is.null(wide_wd)) {
+    wide_wd <- default_wd * 1.5
+  }
+  if (wide_wd <= default_wd) {
+    warning("wide_wd <= default_wd")
+  }
+
+  if (!is.null(xwide_cols) & is.null(xwide_wd)) {
+    xwide_wd <- default_wd * 2
+  }
+  if (xwide_wd <= default_wd) {
+    warning("xwide_wd <= default_wd")
+  }
+  if (xwide_wd <= wide_wd) {
+    warning("xwide_wd <= wide_wd")
+  }
+
+  # change user specified column widths from default
+  purrr::walk2(list(narrow_cols, wide_cols, xwide_cols),
+               list(narrow_wd  , wide_wd  , xwide_wd  ),
+               ~ {
+                   if (!is.null(.x)) {
+                     openxlsx::setColWidths(wb,
+                                            sheet = sheet_name,
+                                            cols = which(colnames(df) %in% .x),
+                                            widths = .y)
+                   }
+                 }
+  )
+
+  return(wb)
+}
