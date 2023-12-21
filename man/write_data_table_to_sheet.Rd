@@ -124,7 +124,7 @@ a modified `openxlsx` `Workbook` object
 \description{
 Writes a data frame/tibble to an Excel worksheet with the
   following features:
- - Column labels/descriptions a row above the header
+ - Column labels/descriptions above the header
  - Filters
  - Freeze panes
  - Rounding

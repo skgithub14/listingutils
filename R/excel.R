@@ -367,7 +367,7 @@ populate_workbook <- function (wb, sheet_data, sheet_headers) {
 #'
 #' @description Writes a data frame/tibble to an Excel worksheet with the
 #'   following features:
-#'  - Column labels/descriptions a row above the header
+#'  - Column labels/descriptions above the header
 #'  - Filters
 #'  - Freeze panes
 #'  - Rounding
@@ -670,7 +670,6 @@ write_data_table_to_sheet <- function(wb,
   if (wide_wd <= default_wd) warning("wide_wd <= default_wd")
 
   if (is.null(xwide_wd)) xwide_wd <- default_wd * 2
-  if (xwide_wd <= default_wd) warning("xwide_wd <= default_wd")
   if (xwide_wd <= wide_wd) warning("xwide_wd <= wide_wd")
 
   # change user specified column widths from default
