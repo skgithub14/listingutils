@@ -398,14 +398,14 @@ populate_workbook <- function (wb, sheet_data, sheet_headers) {
 #' @param num_cols an optional named numeric vector where the names are column
 #'   names in `df` that are numeric columns and the values are number of decimal
 #'   places each column should be rounded to; default is `NULL`, in which case
-#'   any numeric columns not listed in `perc_cols` will use Excel's general cell
-#'   format
+#'   any numeric columns not listed in `num_cols` or `perc_cols` will use
+#'   Excel's general cell format
 #' @param perc_cols an optional named numeric vector where the names are column
 #'   names in `df` that are percentage columns and the values are number of
 #'   decimal places each column should be rounded to; default is `NULL`, in
-#'   which case any numeric columns not specified in `num_cols` will use Excel's
-#'   general cell format. Note, any column specified in this argument will be
-#'   multiplies by 100.
+#'   which case any numeric columns not specified in `num_cols` or `perc_cols`
+#'   will use Excel's general cell format. Note, any column specified in this
+#'   argument will be multiplied by 100.
 #' @param dateFormat a string specifying the format of Date class columns using
 #'   the `openxlsx` specification; default is `"ddmmmyyyy"`
 #' @param dateTimeFormat a string specifying the format of the date/time class
@@ -427,11 +427,13 @@ populate_workbook <- function (wb, sheet_data, sheet_headers) {
 #'   to color the column name and label rows; default is `"#b3d9e5"` (light
 #'   blue)
 #' @param default_wd a numeric value specifying the default column width;
-#'   default is `20`
+#'   default is `20`; note if `narrow_wd`, `wide_wd`, or `xwide_wd` are `NULL`,
+#'   they will be adjusted relative to `default_wd` (see their parameter details
+#'   for more information)
 #' @param narrow_cols,wide_cols,xwide_cols optional character vectors of column
 #'   names which will be made narrower, wider or extra wide; default is `NULL`
 #' @param narrow_wd,wide_wd,xwide_wd optional numeric values which specify the
-#'   column widths for the columns specified in the `narrow_cols`, `wid_cols`,
+#'   column widths for the columns specified in the `narrow_cols`, `wide_cols`,
 #'   and `xwide_cols` arguments, respectively; default is `NULL` in which case,
 #'   `narrow_wd = 0.5 * default_wd`, `wide_wd = 1.5 * default_wd`, and
 #'   `xwide_wd = 2 * default_wd`
@@ -589,8 +591,10 @@ write_data_table_to_sheet <- function(wb,
       })
     }
 
-    # add date and time styles
+    ## add date and time styles
     col_classes <- purrr::modify(colnames(df), ~ class(df[[.]])[1])
+
+    # dates
     contentStyleDates <- openxlsx::createStyle(
       border = border,
       wrapText = wrapText,
@@ -605,6 +609,8 @@ write_data_table_to_sheet <- function(wb,
                        rows = table_start_row + seq(1, nrow(df)),
                        cols = which(col_classes == "Date"),
                        gridExpand = TRUE)
+
+    # date/times
     contentStyleDateTimes <- openxlsx::createStyle(
       border = border,
       wrapText = wrapText,
@@ -632,6 +638,7 @@ write_data_table_to_sheet <- function(wb,
       firstActiveCol = which(colnames(df) == last_frozen_col) + 1
     )
 
+    # freeze left panes only
   } else if (!is.null(last_frozen_col) & !freeze_header) {
     openxlsx::freezePane(
       wb,
@@ -639,6 +646,7 @@ write_data_table_to_sheet <- function(wb,
       firstActiveCol = which(colnames(df) == last_frozen_col) + 1
     )
 
+    # freeze header only
   } else if (is.null(last_frozen_col) & freeze_header) {
     openxlsx::freezePane(
       wb,
@@ -653,6 +661,7 @@ write_data_table_to_sheet <- function(wb,
                          cols = 1:ncol(df),
                          widths = default_wd)
 
+  ## column widths
   # calculate and check column widths
   if (is.null(narrow_wd)) narrow_wd <- default_wd * 0.5
   if (narrow_wd >= default_wd) warning("narrow_wd >= default_wd")
