@@ -474,7 +474,7 @@ write_data_table_to_sheet <- function(wb,
                                       col_label_fontColour = "black",
                                       header_textDecoration = "bold",
                                       header_fgFill = "#b3d9e5",
-                                      header_Colour = "black",
+                                      header_fontColour = "black",
 
                                       default_wd = 20,
                                       narrow_cols = NULL,
