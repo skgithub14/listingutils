@@ -28,7 +28,7 @@ write_data_table_to_sheet(
   col_label_fontColour = "black",
   header_textDecoration = "bold",
   header_fgFill = "#b3d9e5",
-  header_Colour = "black",
+  header_fontColour = "black",
   default_wd = 20,
   narrow_cols = NULL,
   wide_cols = NULL,
@@ -115,6 +115,9 @@ column name row using the `openxlsx` specification; default is `"bold"`}
 \item{header_fgFill}{a string containing a color hex code which will be used
 to color the column name row; default is `"#b3d9e5"` (light blue)}
 
+\item{header_fontColour}{a string specifying the font color for the column
+header row, default is `"black"`}
+
 \item{default_wd}{a numeric value specifying the default column width;
 default is `20`; note if `narrow_wd`, `wide_wd`, or `xwide_wd` are `NULL`,
 they will be adjusted relative to `default_wd` (see their parameter details
@@ -128,9 +131,6 @@ column widths for the columns specified in the `narrow_cols`, `wide_cols`,
 and `xwide_cols` arguments, respectively; default is `NULL` in which case,
 `narrow_wd = 0.5 * default_wd`, `wide_wd = 1.5 * default_wd`, and
 `xwide_wd = 2 * default_wd`}
-
-\item{header_fontColour}{a string specifying the font color for the column
-header row, default is `"black"`}
 }
 \value{
 a modified `openxlsx` `Workbook` object
