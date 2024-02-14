@@ -23,8 +23,12 @@ write_data_table_to_sheet(
   halign = "center",
   valign = "center",
   fontSize = 11,
+  col_label_textDecoration = "bold",
+  col_label_fgFill = "#b3d9e5",
+  col_label_fontColour = "black",
   header_textDecoration = "bold",
   header_fgFill = "#b3d9e5",
+  header_Colour = "black",
   default_wd = 20,
   narrow_cols = NULL,
   wide_cols = NULL,
@@ -96,13 +100,20 @@ cell alignment for all cells using the `openxlsx` specification; default is
 \item{fontSize}{a numeric value specifying the font size for all cells;
 default is `11`}
 
+\item{col_label_textDecoration}{a string describing the text styling for the
+column label row using the `openxlsx` specification; default is `"bold"`}
+
+\item{col_label_fgFill}{a string containing a color hex code which will be
+used to color the column label rows; default is `"#b3d9e5"` (light blue)}
+
+\item{col_label_fontColour}{a string specifying the font color for the column
+label row, default is `"black"`}
+
 \item{header_textDecoration}{a string describing the text styling for the
-column name and label rows using the `openxlsx` specification; default is
-`"bold"`}
+column name row using the `openxlsx` specification; default is `"bold"`}
 
 \item{header_fgFill}{a string containing a color hex code which will be used
-to color the column name and label rows; default is `"#b3d9e5"` (light
-blue)}
+to color the column name row; default is `"#b3d9e5"` (light blue)}
 
 \item{default_wd}{a numeric value specifying the default column width;
 default is `20`; note if `narrow_wd`, `wide_wd`, or `xwide_wd` are `NULL`,
@@ -117,6 +128,9 @@ column widths for the columns specified in the `narrow_cols`, `wide_cols`,
 and `xwide_cols` arguments, respectively; default is `NULL` in which case,
 `narrow_wd = 0.5 * default_wd`, `wide_wd = 1.5 * default_wd`, and
 `xwide_wd = 2 * default_wd`}
+
+\item{header_fontColour}{a string specifying the font color for the column
+header row, default is `"black"`}
 }
 \value{
 a modified `openxlsx` `Workbook` object
