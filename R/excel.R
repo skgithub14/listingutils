@@ -367,7 +367,7 @@ populate_workbook <- function (wb, sheet_data, sheet_headers) {
 #'
 #' @description Writes a data frame/tibble to an Excel worksheet with the
 #'   following features:
-#'  - Column labels/descriptions a row above the header
+#'  - Column labels/descriptions above the header
 #'  - Filters
 #'  - Freeze panes
 #'  - Rounding
@@ -398,14 +398,14 @@ populate_workbook <- function (wb, sheet_data, sheet_headers) {
 #' @param num_cols an optional named numeric vector where the names are column
 #'   names in `df` that are numeric columns and the values are number of decimal
 #'   places each column should be rounded to; default is `NULL`, in which case
-#'   any numeric columns not listed in `perc_cols` will use Excel's general cell
-#'   format
+#'   any numeric columns not listed in `num_cols` or `perc_cols` will use
+#'   Excel's general cell format
 #' @param perc_cols an optional named numeric vector where the names are column
 #'   names in `df` that are percentage columns and the values are number of
 #'   decimal places each column should be rounded to; default is `NULL`, in
-#'   which case any numeric columns not specified in `num_cols` will use Excel's
-#'   general cell format. Note, any column specified in this argument will be
-#'   multiplies by 100.
+#'   which case any numeric columns not specified in `num_cols` or `perc_cols`
+#'   will use Excel's general cell format. Note, any column specified in this
+#'   argument will be multiplied by 100.
 #' @param dateFormat a string specifying the format of Date class columns using
 #'   the `openxlsx` specification; default is `"ddmmmyyyy"`
 #' @param dateTimeFormat a string specifying the format of the date/time class
@@ -420,18 +420,26 @@ populate_workbook <- function (wb, sheet_data, sheet_headers) {
 #'   `center`
 #' @param fontSize a numeric value specifying the font size for all cells;
 #'   default is `11`
+#' @param col_label_textDecoration a string describing the text styling for the
+#'   column label row using the `openxlsx` specification; default is `"bold"`
+#' @param col_label_fgFill a string containing a color hex code which will be
+#'   used to color the column label rows; default is `"#b3d9e5"` (light blue)
+#' @param col_label_fontColour a string specifying the font color for the column
+#'   label row, default is `"black"`
 #' @param header_textDecoration a string describing the text styling for the
-#'   column name and label rows using the `openxlsx` specification; default is
-#'   `"bold"`
+#'   column name row using the `openxlsx` specification; default is `"bold"`
 #' @param header_fgFill a string containing a color hex code which will be used
-#'   to color the column name and label rows; default is `"#b3d9e5"` (light
-#'   blue)
+#'   to color the column name row; default is `"#b3d9e5"` (light blue)
+#' @param header_fontColour a string specifying the font color for the column
+#'   header row, default is `"black"`
 #' @param default_wd a numeric value specifying the default column width;
-#'   default is `20`
+#'   default is `20`; note if `narrow_wd`, `wide_wd`, or `xwide_wd` are `NULL`,
+#'   they will be adjusted relative to `default_wd` (see their parameter details
+#'   for more information)
 #' @param narrow_cols,wide_cols,xwide_cols optional character vectors of column
 #'   names which will be made narrower, wider or extra wide; default is `NULL`
 #' @param narrow_wd,wide_wd,xwide_wd optional numeric values which specify the
-#'   column widths for the columns specified in the `narrow_cols`, `wid_cols`,
+#'   column widths for the columns specified in the `narrow_cols`, `wide_cols`,
 #'   and `xwide_cols` arguments, respectively; default is `NULL` in which case,
 #'   `narrow_wd = 0.5 * default_wd`, `wide_wd = 1.5 * default_wd`, and
 #'   `xwide_wd = 2 * default_wd`
@@ -461,8 +469,12 @@ write_data_table_to_sheet <- function(wb,
                                       halign = "center",
                                       valign = "center",
                                       fontSize = 11,
+                                      col_label_textDecoration = "bold",
+                                      col_label_fgFill = "#b3d9e5",
+                                      col_label_fontColour = "black",
                                       header_textDecoration = "bold",
                                       header_fgFill = "#b3d9e5",
+                                      header_Colour = "black",
 
                                       default_wd = 20,
                                       narrow_cols = NULL,
@@ -472,6 +484,18 @@ write_data_table_to_sheet <- function(wb,
                                       wide_wd = NULL,
                                       xwide_wd = NULL) {
 
+  # column labels and header style
+  colLabelStyle <- openxlsx::createStyle(
+    border = border,
+    wrapText = wrapText,
+    halign = halign,
+    valign = valign,
+    fontSize = fontSize,
+    textDecoration = col_label_textDecoration,
+    fgFill = col_label_fgFill,
+    fontColour = col_label_fontColour
+  )
+
   headerStyle <- openxlsx::createStyle(
     border = border,
     wrapText = wrapText,
@@ -479,10 +503,11 @@ write_data_table_to_sheet <- function(wb,
     valign = valign,
     fontSize = fontSize,
     textDecoration = header_textDecoration,
-    fgFill = header_fgFill
+    fgFill = header_fgFill,
+    fontColour = header_fontColour
   )
 
-  # optionally, add a row of column labels above the main table
+  ## optionally, add a row of column labels above the main table
   if (!is.null(col_labels)) {
 
     # check all column names are present
@@ -503,7 +528,7 @@ write_data_table_to_sheet <- function(wb,
                                        startCol = which(colnames(df) == .y)))
     openxlsx::addStyle(wb,
                        sheet = sheet_name,
-                       style = headerStyle,
+                       style = colLabelStyle,
                        rows = start_row,
                        cols = 1:ncol(df))
 
@@ -520,7 +545,7 @@ write_data_table_to_sheet <- function(wb,
     table_start_row <- start_row
   }
 
-  # add the data with header and filters
+  ## write the data with a filtered header
   openxlsx::writeData(wb,
                       sheet = sheet_name,
                       x = df,
@@ -529,7 +554,7 @@ write_data_table_to_sheet <- function(wb,
                       headerStyle = headerStyle,
                       withFilter = withFilter)
 
-  # format the table body, if there is data
+  ## format the table body, if there is any data
   if (nrow(df) > 0){
 
     # apply default style to all rows and columns
@@ -547,6 +572,7 @@ write_data_table_to_sheet <- function(wb,
                        cols = seq(1, ncol(df)),
                        gridExpand = TRUE)
 
+    ## format numeric columns
     # apply numeric style with user specified rounding by column name
     if (!is.null(num_cols)) {
       purrr::iwalk(num_cols, {
@@ -589,8 +615,10 @@ write_data_table_to_sheet <- function(wb,
       })
     }
 
-    # add date and time styles
+    ## format date and time columns
     col_classes <- purrr::modify(colnames(df), ~ class(df[[.]])[1])
+
+    # dates
     contentStyleDates <- openxlsx::createStyle(
       border = border,
       wrapText = wrapText,
@@ -605,6 +633,8 @@ write_data_table_to_sheet <- function(wb,
                        rows = table_start_row + seq(1, nrow(df)),
                        cols = which(col_classes == "Date"),
                        gridExpand = TRUE)
+
+    # date/times
     contentStyleDateTimes <- openxlsx::createStyle(
       border = border,
       wrapText = wrapText,
@@ -623,6 +653,7 @@ write_data_table_to_sheet <- function(wb,
     )
   }
 
+  ## freeze panes
   # freeze column names and user specified left most columns
   if (!is.null(last_frozen_col) & freeze_header) {
     openxlsx::freezePane(
@@ -632,6 +663,7 @@ write_data_table_to_sheet <- function(wb,
       firstActiveCol = which(colnames(df) == last_frozen_col) + 1
     )
 
+    # freeze left panes only
   } else if (!is.null(last_frozen_col) & !freeze_header) {
     openxlsx::freezePane(
       wb,
@@ -639,6 +671,7 @@ write_data_table_to_sheet <- function(wb,
       firstActiveCol = which(colnames(df) == last_frozen_col) + 1
     )
 
+    # freeze header only
   } else if (is.null(last_frozen_col) & freeze_header) {
     openxlsx::freezePane(
       wb,
@@ -647,13 +680,14 @@ write_data_table_to_sheet <- function(wb,
     )
   }
 
+  ## column widths
   # set default columns widths
   openxlsx::setColWidths(wb,
                          sheet = sheet_name,
                          cols = 1:ncol(df),
                          widths = default_wd)
 
-  # calculate and check column widths
+  # calculate and check non-default column widths
   if (is.null(narrow_wd)) narrow_wd <- default_wd * 0.5
   if (narrow_wd >= default_wd) warning("narrow_wd >= default_wd")
 
@@ -661,7 +695,6 @@ write_data_table_to_sheet <- function(wb,
   if (wide_wd <= default_wd) warning("wide_wd <= default_wd")
 
   if (is.null(xwide_wd)) xwide_wd <- default_wd * 2
-  if (xwide_wd <= default_wd) warning("xwide_wd <= default_wd")
   if (xwide_wd <= wide_wd) warning("xwide_wd <= wide_wd")
 
   # change user specified column widths from default

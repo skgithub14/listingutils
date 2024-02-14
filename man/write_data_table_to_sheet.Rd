@@ -23,8 +23,12 @@ write_data_table_to_sheet(
   halign = "center",
   valign = "center",
   fontSize = 11,
+  col_label_textDecoration = "bold",
+  col_label_fgFill = "#b3d9e5",
+  col_label_fontColour = "black",
   header_textDecoration = "bold",
   header_fgFill = "#b3d9e5",
+  header_Colour = "black",
   default_wd = 20,
   narrow_cols = NULL,
   wide_cols = NULL,
@@ -66,15 +70,15 @@ columns will be frozen}
 \item{num_cols}{an optional named numeric vector where the names are column
 names in `df` that are numeric columns and the values are number of decimal
 places each column should be rounded to; default is `NULL`, in which case
-any numeric columns not listed in `perc_cols` will use Excel's general cell
-format}
+any numeric columns not listed in `num_cols` or `perc_cols` will use
+Excel's general cell format}
 
 \item{perc_cols}{an optional named numeric vector where the names are column
 names in `df` that are percentage columns and the values are number of
 decimal places each column should be rounded to; default is `NULL`, in
-which case any numeric columns not specified in `num_cols` will use Excel's
-general cell format. Note, any column specified in this argument will be
-multiplies by 100.}
+which case any numeric columns not specified in `num_cols` or `perc_cols`
+will use Excel's general cell format. Note, any column specified in this
+argument will be multiplied by 100.}
 
 \item{dateFormat}{a string specifying the format of Date class columns using
 the `openxlsx` specification; default is `"ddmmmyyyy"`}
@@ -96,25 +100,37 @@ cell alignment for all cells using the `openxlsx` specification; default is
 \item{fontSize}{a numeric value specifying the font size for all cells;
 default is `11`}
 
+\item{col_label_textDecoration}{a string describing the text styling for the
+column label row using the `openxlsx` specification; default is `"bold"`}
+
+\item{col_label_fgFill}{a string containing a color hex code which will be
+used to color the column label rows; default is `"#b3d9e5"` (light blue)}
+
+\item{col_label_fontColour}{a string specifying the font color for the column
+label row, default is `"black"`}
+
 \item{header_textDecoration}{a string describing the text styling for the
-column name and label rows using the `openxlsx` specification; default is
-`"bold"`}
+column name row using the `openxlsx` specification; default is `"bold"`}
 
 \item{header_fgFill}{a string containing a color hex code which will be used
-to color the column name and label rows; default is `"#b3d9e5"` (light
-blue)}
+to color the column name row; default is `"#b3d9e5"` (light blue)}
 
 \item{default_wd}{a numeric value specifying the default column width;
-default is `20`}
+default is `20`; note if `narrow_wd`, `wide_wd`, or `xwide_wd` are `NULL`,
+they will be adjusted relative to `default_wd` (see their parameter details
+for more information)}
 
 \item{narrow_cols, wide_cols, xwide_cols}{optional character vectors of column
 names which will be made narrower, wider or extra wide; default is `NULL`}
 
 \item{narrow_wd, wide_wd, xwide_wd}{optional numeric values which specify the
-column widths for the columns specified in the `narrow_cols`, `wid_cols`,
+column widths for the columns specified in the `narrow_cols`, `wide_cols`,
 and `xwide_cols` arguments, respectively; default is `NULL` in which case,
 `narrow_wd = 0.5 * default_wd`, `wide_wd = 1.5 * default_wd`, and
 `xwide_wd = 2 * default_wd`}
+
+\item{header_fontColour}{a string specifying the font color for the column
+header row, default is `"black"`}
 }
 \value{
 a modified `openxlsx` `Workbook` object
@@ -122,7 +138,7 @@ a modified `openxlsx` `Workbook` object
 \description{
 Writes a data frame/tibble to an Excel worksheet with the
   following features:
- - Column labels/descriptions a row above the header
+ - Column labels/descriptions above the header
  - Filters
  - Freeze panes
  - Rounding
