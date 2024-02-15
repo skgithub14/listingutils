@@ -9,6 +9,7 @@ write_data_table_to_sheet(
   sheet_name,
   df,
   start_row,
+  start_col = 1,
   col_labels = NULL,
   col_label_row_ht = 60,
   withFilter = TRUE,
@@ -49,6 +50,9 @@ write_data_table_to_sheet(
 `col_labels` is not `NULL` then the column labels will be written to this
 row with the column names the row below them, otherwise the column names
 will be written here}
+
+\item{start_col}{a numeric value, the column to start writing the table;
+default is `1`}
 
 \item{col_labels}{an optional named character vector of column labels where
 names are the column names in `df`; if present, column labels are added to

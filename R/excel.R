@@ -383,6 +383,8 @@ populate_workbook <- function (wb, sheet_data, sheet_headers) {
 #'   `col_labels` is not `NULL` then the column labels will be written to this
 #'   row with the column names the row below them, otherwise the column names
 #'   will be written here
+#' @param start_col a numeric value, the column to start writing the table;
+#'   default is `1`
 #' @param col_labels an optional named character vector of column labels where
 #'   names are the column names in `df`; if present, column labels are added to
 #'   the row directly above the column titles
@@ -451,6 +453,7 @@ write_data_table_to_sheet <- function(wb,
                                       sheet_name,
                                       df,
                                       start_row,
+                                      start_col = 1,
 
                                       col_labels = NULL,
                                       col_label_row_ht = 60,
@@ -521,16 +524,18 @@ write_data_table_to_sheet <- function(wb,
 
     # write the column labels row as the 1st row of the table
     purrr::iwalk(col_labels,
-                 ~ openxlsx::writeData(wb,
-                                       sheet = sheet_name,
-                                       .x,
-                                       startRow = start_row,
-                                       startCol = which(colnames(df) == .y)))
+                 ~ openxlsx::writeData(
+                   wb,
+                   sheet = sheet_name,
+                   .x,
+                   startRow = start_row,
+                   startCol = start_col - 1 + which(colnames(df) == .y))
+                 )
     openxlsx::addStyle(wb,
                        sheet = sheet_name,
                        style = colLabelStyle,
                        rows = start_row,
-                       cols = 1:ncol(df))
+                       cols = start_col - 1 + 1:ncol(df))
 
     # restrict height of label row
     openxlsx::setRowHeights(wb,
@@ -551,6 +556,7 @@ write_data_table_to_sheet <- function(wb,
                       x = df,
                       colNames = TRUE,
                       startRow = table_start_row,
+                      startCol = start_col,
                       headerStyle = headerStyle,
                       withFilter = withFilter)
 
@@ -569,7 +575,7 @@ write_data_table_to_sheet <- function(wb,
                        sheet = sheet_name,
                        style = contentStyleGeneral,
                        rows = table_start_row + seq(1, nrow(df)),
-                       cols = seq(1, ncol(df)),
+                       cols = start_col - 1 + seq(1, ncol(df)),
                        gridExpand = TRUE)
 
     ## format numeric columns
@@ -589,7 +595,7 @@ write_data_table_to_sheet <- function(wb,
                            sheet = sheet_name,
                            style = contentStyleNumRnd,
                            rows = table_start_row + seq(1, nrow(df)),
-                           cols = which(colnames(df) %in% .y),
+                           cols = start_col - 1 + which(colnames(df) %in% .y),
                            gridExpand = TRUE)
       })
     }
@@ -610,7 +616,7 @@ write_data_table_to_sheet <- function(wb,
                            sheet = sheet_name,
                            style = contentStylePercRnd,
                            rows = table_start_row + seq(1, nrow(df)),
-                           cols = which(colnames(df) %in% .y),
+                           cols = start_col - 1 + which(colnames(df) %in% .y),
                            gridExpand = TRUE)
       })
     }
@@ -631,7 +637,7 @@ write_data_table_to_sheet <- function(wb,
                        sheet = sheet_name,
                        style = contentStyleDates,
                        rows = table_start_row + seq(1, nrow(df)),
-                       cols = which(col_classes == "Date"),
+                       cols = start_col - 1 + which(col_classes == "Date"),
                        gridExpand = TRUE)
 
     # date/times
@@ -648,7 +654,7 @@ write_data_table_to_sheet <- function(wb,
       sheet = sheet_name,
       style = contentStyleDateTimes,
       rows = table_start_row + seq(1, nrow(df)),
-      cols = which(col_classes %in% c("POSIXlt", "POSIXt", "POSIXct")),
+      cols = start_col - 1 + which(col_classes %in% c("POSIXlt", "POSIXt", "POSIXct")),
       gridExpand = TRUE
     )
   }
@@ -660,7 +666,7 @@ write_data_table_to_sheet <- function(wb,
       wb,
       sheet = sheet_name,
       firstActiveRow = table_start_row + 1,
-      firstActiveCol = which(colnames(df) == last_frozen_col) + 1
+      firstActiveCol = start_col - 1 + which(colnames(df) == last_frozen_col) + 1
     )
 
     # freeze left panes only
@@ -668,7 +674,7 @@ write_data_table_to_sheet <- function(wb,
     openxlsx::freezePane(
       wb,
       sheet = sheet_name,
-      firstActiveCol = which(colnames(df) == last_frozen_col) + 1
+      firstActiveCol = start_col - 1 + which(colnames(df) == last_frozen_col) + 1
     )
 
     # freeze header only
@@ -684,7 +690,7 @@ write_data_table_to_sheet <- function(wb,
   # set default columns widths
   openxlsx::setColWidths(wb,
                          sheet = sheet_name,
-                         cols = 1:ncol(df),
+                         cols = start_col - 1 + 1:ncol(df),
                          widths = default_wd)
 
   # calculate and check non-default column widths
@@ -698,16 +704,19 @@ write_data_table_to_sheet <- function(wb,
   if (xwide_wd <= wide_wd) warning("xwide_wd <= wide_wd")
 
   # change user specified column widths from default
-  purrr::walk2(list(narrow_cols, wide_cols, xwide_cols),
-               list(narrow_wd  , wide_wd  , xwide_wd  ),
-               ~ {
-                   if (!is.null(.x)) {
-                     openxlsx::setColWidths(wb,
-                                            sheet = sheet_name,
-                                            cols = which(colnames(df) %in% .x),
-                                            widths = .y)
-                   }
-                 }
+  purrr::walk2(
+    list(narrow_cols, wide_cols, xwide_cols),
+    list(narrow_wd  , wide_wd  , xwide_wd  ),
+    ~ {
+      if (!is.null(.x)) {
+        openxlsx::setColWidths(
+          wb,
+          sheet = sheet_name,
+          cols = start_col - 1 + which(colnames(df) %in% .x),
+          widths = .y
+        )
+      }
+    }
   )
 
   return(wb)

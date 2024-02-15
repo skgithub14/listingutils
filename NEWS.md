@@ -1,5 +1,21 @@
 # listingutils (development version)
 
+## listingutils 0.0.0.9004
+
+### Major Changes
+
+* None
+
+### Minor Changes
+
+* Allow user to specify starting column when using `write_data_table_to_sheet()`
+
+### Bug Fixes
+
+* None
+
+
+
 ## listingutils 0.0.0.9003
 
 ### Major Changes
